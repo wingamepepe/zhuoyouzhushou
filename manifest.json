@@ -8,13 +8,13 @@
   "description": "一款用于辅助桌游的工具",
   "icons": [
     {
-      "src": "icon-192x192.png",
-      "type": "image/png",
+      "src": "icon-192x192.svg",
+      "type": "image/svg+xml",
       "sizes": "192x192"
     },
     {
-      "src": "icon-512x512.png",
-      "type": "image/png",
+      "src": "icon-512x512.svg",
+      "type": "image/svg+xml",
       "sizes": "512x512"
     }
   ]

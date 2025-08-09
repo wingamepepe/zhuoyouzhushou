@@ -1,0 +1,21 @@
+{
+  "name": "桌游助手",
+  "short_name": "桌游助手",
+  "start_url": "zhuoyouzhushou.html",
+  "display": "standalone",
+  "background_color": "#f0f2f5",
+  "theme_color": "#007bff",
+  "description": "一款用于辅助桌游的工具",
+  "icons": [
+    {
+      "src": "icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}

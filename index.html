@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <title>桌游助手</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4A90E2;
+            --primary-hover: #357ABD;
+            --danger-color: #D0021B;
+            --danger-hover: #A00115;
+            --success-color: #7ED321;
+            --success-hover: #62A81A;
+            --secondary-color: #8B959E;
+            --secondary-hover: #6C757D;
+            
+            --bg-color: #F7F8FC;
+            --card-bg: #FFFFFF;
+            --subtle-bg: #F2F4F7;
+            --border-color: #EAEBEE;
+            --text-color: #24292E;
+            --text-light-color: #586069;
+            --shadow-color: rgba(101, 119, 134, 0.15);
+        }
+        body {
+            font-family: 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: grid;
+            gap: 15px;
+        }
+        .section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px 20px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            transition: all 0.3s ease;
+        }
+        h2 {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: var(--text-color);
+            margin: 0 0 15px 0;
+        }
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            white-space: nowrap;
+        }
+        .btn:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .btn-danger { background-color: var(--danger-color); }
+        .btn-danger:hover { background-color: var(--danger-hover); }
+        .btn-success { background-color: var(--success-color); }
+        .btn-success:hover { background-color: var(--success-hover); }
+        .btn-secondary { background-color: var(--secondary-color); }
+        .btn-secondary:hover { background-color: var(--secondary-hover); }
+        
+        .display {
+            font-size: 1.8em;
+            font-weight: 700;
+            min-width: 60px;
+            text-align: center;
+            color: var(--primary-color);
+            flex-grow: 1;
+        }
+        
+        /* Tag Styles */
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: var(--subtle-bg);
+            margin-top: 8px;
+        }
+        .tag-container:empty::before {
+            content: "暂无";
+            color: var(--text-light-color);
+            font-size: 0.9em;
+        }
+        .tag {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        .tag.active-tag {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .tag.available-tag {
+            background-color: var(--border-color);
+            color: var(--text-light-color);
+        }
+        .tag.available-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
+        .tag-name {
+            cursor: pointer;
+            flex-grow: 1;
+        }
+        .remove-tag {
+            width: 16px;
+            height: 16px;
+            line-height: 16px;
+            font-size: 12px;
+            text-align: center;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.2);
+            color: white;
+            font-weight: bold;
+            font-family: monospace;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .tag.available-tag .remove-tag {
+            background-color: rgba(0,0,0,0.1);
+        }
+        .remove-tag:hover {
+            background-color: rgba(0,0,0,0.4);
+        }
+        .section-header {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: var(--text-light-color);
+            margin: 15px 0 8px 0;
+        }
+
+        .dice-results {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: var(--subtle-bg);
+            min-height: 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--text-light-color);
+        }
+        input[type="text"] {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            flex-grow: 1;
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 0.9em;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+        .management-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, padding-top 0.4s ease-out, margin-top 0.4s ease-out;
+            padding-top: 0;
+            margin-top: 0;
+        }
+        .management-panel.visible {
+            max-height: 500px; /* Arbitrary large value */
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 生命值 & 金币 -->
+        <div class="section">
+             <div style="display: flex; justify-content: space-around; gap: 20px;">
+                <div style="text-align: center;">
+                    <h2>生命值</h2>
+                    <div class="control-group">
+                        <button class="btn btn-danger" onclick="changeHealth(-1)">-</button>
+                        <div id="health-display" class="display">5/5</div>
+                        <button class="btn btn-success" onclick="changeHealth(1)">+</button>
+                    </div>
+                    <div class="control-group" style="justify-content: center;">
+                        <button class="btn btn-danger" style="padding: 4px 8px; font-size: 0.8em;" onclick="decreaseMaxHealth()">-Max</button>
+                        <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.8em;" onclick="increaseMaxHealth()">+Max</button>
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <h2>金币</h2>
+                    <div class="control-group">
+                        <button class="btn btn-danger" onclick="changeGold(-1)">-</button>
+                        <div id="gold-display" class="display">0</div>
+                        <button class="btn btn-success" onclick="changeGold(1)">+</button>
+                    </div>
+                    <button class="btn btn-success" style="padding: 4px 8px; font-size: 0.8em;" onclick="changeGold(10)">+10</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 状态栏 -->
+        <div id="status-section" class="section">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <h2>状态</h2>
+                <button class="btn btn-secondary" onclick="toggleManagementUI('status', this)">管理</button>
+            </div>
+            <p class="section-header">当前:</p>
+            <div id="status-active-tags" class="tag-container"></div>
+            <div id="status-management" class="management-panel">
+                <p class="section-header">可用 (点选添加, 点x删除):</p>
+                <div id="status-available-tags" class="tag-container"></div>
+                <div class="control-group" style="margin-top: 15px;">
+                    <input type="text" id="new-status-type" placeholder="创建新状态">
+                    <button class="btn btn-success" onclick="addType('status')">创建</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 道具栏 -->
+        <div id="items-section" class="section">
+             <div style="display: flex; align-items: center; justify-content: space-between;">
+                <h2>道具</h2>
+                <button class="btn btn-secondary" onclick="toggleManagementUI('items', this)">管理</button>
+            </div>
+            <p class="section-header">当前:</p>
+            <div id="items-active-tags" class="tag-container"></div>
+            <div id="items-management" class="management-panel">
+                <p class="section-header">可用 (点选添加, 点x删除):</p>
+                <div id="items-available-tags" class="tag-container"></div>
+                <div class="control-group" style="margin-top: 15px;">
+                    <input type="text" id="new-items-type" placeholder="创建新道具">
+                    <button class="btn btn-success" onclick="addType('items')">创建</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 武器栏 -->
+        <div id="weapons-section" class="section">
+             <div style="display: flex; align-items: center; justify-content: space-between;">
+                <h2>武器</h2>
+                <button class="btn btn-secondary" onclick="toggleManagementUI('weapons', this)">管理</button>
+            </div>
+            <p class="section-header">当前:</p>
+            <div id="weapons-active-tags" class="tag-container"></div>
+            <div id="weapons-management" class="management-panel">
+                <p class="section-header">可用 (点选添加, 点x删除):</p>
+                <div id="weapons-available-tags" class="tag-container"></div>
+                <div class="control-group" style="margin-top: 15px;">
+                    <input type="text" id="new-weapons-type" placeholder="创建新武器">
+                    <button class="btn btn-success" onclick="addType('weapons')">创建</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 骰子 -->
+        <div class="section">
+            <h2>骰子</h2>
+            <div class="control-group">
+                <span>投掷</span>
+                <div id="dice-count" class="display" style="color: var(--text-color);">1</div>
+                <span>个</span>
+                <button class="btn" onclick="changeDiceCount(1)">+</button>
+                <button class="btn btn-danger" onclick="changeDiceCount(-1)">-</button>
+                 <button class="btn btn-success" style="flex-grow: 1;" onclick="rollDice()">投掷！</button>
+            </div>
+            <div id="dice-results" class="dice-results"></div>
+        </div>
+        
+        <!-- 系统管理 -->
+        <div class="section">
+             <button class="btn btn-danger" style="width: 100%;" onclick="resetState()">重置所有数据</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 数据状态 ---
+        let defaultState = {
+            health: { current: 5, max: 5 },
+            gold: 0,
+            dice: { count: 1, results: [] },
+            tags: {
+                status: {
+                    types: ['中毒', '眩晕', '祝福', '燃烧'],
+                    active: ['正常']
+                },
+                items: {
+                    types: ['小红瓶', '小蓝瓶', '解毒剂'],
+                    active: []
+                },
+                weapons: {
+                    types: ['小刀', '长剑', '法杖'],
+                    active: ['小刀']
+                }
+            }
+        };
+        let state = JSON.parse(JSON.stringify(defaultState));
+
+        // --- Local Storage ---
+        const STORAGE_KEY = 'boardGameHelperState';
+
+        function saveState() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+
+        function loadState() {
+            const savedState = localStorage.getItem(STORAGE_KEY);
+            if (savedState) {
+                state = JSON.parse(savedState);
+            }
+        }
+        
+        function resetState() {
+            if (confirm('你确定要重置所有数据吗？此操作无法撤销。')) {
+                localStorage.removeItem(STORAGE_KEY);
+                state = JSON.parse(JSON.stringify(defaultState));
+                renderAll();
+                document.querySelectorAll('.management-panel').forEach(p => p.classList.remove('visible'));
+                document.querySelectorAll('.btn-secondary').forEach(b => b.textContent = '管理');
+            }
+        }
+
+        // --- DOM 引用 ---
+        const healthDisplay = document.getElementById('health-display');
+        const goldDisplay = document.getElementById('gold-display');
+        const diceCountDisplay = document.getElementById('dice-count');
+        const diceResultsDisplay = document.getElementById('dice-results');
+
+        // --- 渲染函数 ---
+        function renderHealth() {
+            healthDisplay.textContent = `${state.health.current}/${state.health.max}`;
+        }
+
+        function renderGold() {
+            goldDisplay.textContent = state.gold;
+        }
+
+        function renderDice() {
+            diceCountDisplay.textContent = state.dice.count;
+            let resultsHTML = `结果: ${state.dice.results.join(', ')}`;
+            if (state.dice.results.length > 1) {
+                const sum = state.dice.results.reduce((a, b) => a + b, 0);
+                resultsHTML += ` | 总和: <strong>${sum}</strong>`;
+            }
+            diceResultsDisplay.innerHTML = resultsHTML;
+        }
+
+        function renderTags(category) {
+            const activeContainer = document.getElementById(`${category}-active-tags`);
+            const availableContainer = document.getElementById(`${category}-available-tags`);
+            activeContainer.innerHTML = '';
+            availableContainer.innerHTML = '';
+
+            const { types, active } = state.tags[category];
+
+            active.forEach(tagName => {
+                const tag = document.createElement('div');
+                tag.className = 'tag active-tag';
+                tag.innerHTML = `<span class="tag-name">${tagName}</span> <span class="remove-tag" onclick="removeActiveTag('${category}', '${tagName}')">x</span>`;
+                activeContainer.appendChild(tag);
+            });
+
+            types.forEach(tagName => {
+                const tag = document.createElement('div');
+                tag.className = 'tag available-tag';
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'tag-name';
+                nameSpan.textContent = tagName;
+                nameSpan.onclick = () => addActiveTag(category, tagName);
+
+                const removeBtn = document.createElement('span');
+                removeBtn.className = 'remove-tag';
+                removeBtn.textContent = 'x';
+                removeBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    removeType(category, tagName);
+                };
+                
+                tag.appendChild(nameSpan);
+                tag.appendChild(removeBtn);
+                availableContainer.appendChild(tag);
+            });
+        }
+
+        function renderAll() {
+            renderHealth();
+            renderGold();
+            renderDice();
+            renderTags('status');
+            renderTags('items');
+            renderTags('weapons');
+        }
+
+        // --- 事件处理函数 ---
+        function toggleManagementUI(category, button) {
+            const panel = document.getElementById(`${category}-management`);
+            const isVisible = panel.classList.toggle('visible');
+            button.textContent = isVisible ? '完成' : '管理';
+        }
+
+        function changeHealth(amount) {
+            let newHealth = state.health.current + amount;
+            if (newHealth > state.health.max) newHealth = state.health.max;
+            if (newHealth < 0) newHealth = 0;
+            state.health.current = newHealth;
+            renderHealth();
+            saveState();
+        }
+
+        function increaseMaxHealth() {
+            state.health.max++;
+            state.health.current++;
+            renderHealth();
+            saveState();
+        }
+
+        function decreaseMaxHealth() {
+            if (state.health.max > 1) {
+                state.health.max--;
+                if (state.health.current > state.health.max) {
+                    state.health.current = state.health.max;
+                }
+                renderHealth();
+                saveState();
+            }
+        }
+
+        function changeGold(amount) {
+            state.gold += amount;
+            if (state.gold < 0) state.gold = 0;
+            renderGold();
+            saveState();
+        }
+
+        function changeDiceCount(amount) {
+            let newCount = state.dice.count + amount;
+            if (newCount < 1) newCount = 1;
+            state.dice.count = newCount;
+            renderDice();
+            saveState();
+        }
+
+        function rollDice() {
+            state.dice.results = [];
+            for (let i = 0; i < state.dice.count; i++) {
+                const result = Math.floor(Math.random() * 6) + 1;
+                state.dice.results.push(result);
+            }
+            renderDice();
+            saveState();
+        }
+
+        function addActiveTag(category, tagName) {
+            const { active } = state.tags[category];
+            if (!active.includes(tagName)) {
+                active.push(tagName);
+                renderTags(category);
+                saveState();
+            }
+        }
+
+        function removeActiveTag(category, tagName) {
+            let { active } = state.tags[category];
+            state.tags[category].active = active.filter(t => t !== tagName);
+            renderTags(category);
+            saveState();
+        }
+
+        function addType(category) {
+            const input = document.getElementById(`new-${category}-type`);
+            const newType = input.value.trim();
+            if (newType && !state.tags[category].types.includes(newType)) {
+                state.tags[category].types.push(newType);
+                renderTags(category);
+                saveState();
+                input.value = '';
+            }
+        }
+        
+        function removeType(category, tagName) {
+            state.tags[category].types = state.tags[category].types.filter(t => t !== tagName);
+            state.tags[category].active = state.tags[category].active.filter(t => t !== tagName);
+            renderTags(category);
+            saveState();
+        }
+
+        // --- 初始化 ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            renderAll();
+        });
+
+        // 注册 Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(registration => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

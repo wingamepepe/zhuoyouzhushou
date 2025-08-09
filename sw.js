@@ -1,6 +1,6 @@
 const CACHE_NAME = 'zhuoyouzhushou-cache-v1';
 const URLS_TO_CACHE = [
-  'zhuoyouzhushou.html'
+  'index.html'
 ];
 
 // 安装 Service Worker 时，缓存文件
